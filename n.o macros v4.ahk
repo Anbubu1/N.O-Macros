@@ -5,7 +5,7 @@ goto defineorderedmap
 
 back:
 
-global VERSION := "v4.1"
+global VERSION := "v4.2"
 
 $*!p:: {
     exitapp
@@ -75,6 +75,7 @@ global main := gui("-maximizebox +lastfound +owndialogs", "N.O Macros " VERSION)
         create_checkbox(main, "Rainbow Title",             rainbow_title,  2,,,,,, "cc0c0c0")
         create_checkbox(main, "Colorless Mode",            colorless,      2,,,,,, "cc0c0c0")
         global flick_sensitivity := create_text(main, "Flick Sensitivity", 2, ["Set your flick sensitivity here.", "s8", "s12"], [1, "x", 0.01, 100],, "c90ff90")
+        create_checkbox(main, "Autoclicker",               single_flick,   1, ["really fast.", "s8", "s12", true],,                                true,,, "cff9fc0")
         create_checkbox(main, "Single Flick Macro",        single_flick,   1, ["does a single flick", "s8", "s12", true],,                         true, [90, "°", -360, 360],, "cff9f9f")
         create_checkbox(main, "Spacebar Macro",            spacebar,       1, ["spams spacebar", "s8", "s12", true],,                              true,,, "cffc09f")
         create_checkbox(main, "Chat Message Macro",        chat_msg,       1, ["pastes a chat message and sends it", "s8", "s12", true],,          true, ["N.O on top", "", -360, 360, true],, "cffff9f")
@@ -86,6 +87,7 @@ global main := gui("-maximizebox +lastfound +owndialogs", "N.O Macros " VERSION)
                                                                                )", "s8", "s12", true],,          true,,, "c9fff9f")
         create_checkbox(main, "Mouse Overlay",             mouse_overlay,  1, ["creates a useful mouse overlay", "s8", "s12", true],,,,,                   "c9fffc0")
         create_checkbox(main, "Always Forward Slide",      forward_slide,  1, ["turns your camera to always forward slide on any slide", "s8", "s12", true],,,,, "c9fffff")
+        create_checkbox(main, "W-S Macro",                 w_s,            1, ["you people disgust me.", "s8", "s12", true],, true,,, "c9fc0ff")
         create_text(main, "FUCKING READ THIS!!!",           1, ["
                                                                 (
                                                                 SET YOUR BLOODY FLICK SENSITIVITY PLEASE! thanks
@@ -539,6 +541,18 @@ spacebar(thishotkey) {
     while getkeystate(fixed_hotkey, "P") {
         send "{space}"
         send "{space}"
+        send "{space}"
+        sleep 1
+    }
+}
+
+autoclick(thishotkey) {
+    fixed_hotkey := regexreplace(thishotkey, "\*\$")
+
+    while getkeystate(fixed_hotkey, "P") {
+        click
+        click
+        click
         sleep 1
     }
 }
@@ -667,6 +681,25 @@ forward_slide(checkbox, href) {
     hotifwinactive "Roblox"
     hotkey "*$c", slide, checkbox.value
     hotifwinactive "Roblox"
+}
+
+w_s(thishotkey) {
+    fixed_hotkey := regexreplace(thishotkey, "\*\$")
+
+    is_w := false
+    
+    while getkeystate(fixed_hotkey, "P") {
+        if is_w {
+            send "{w up}{s down}"
+            is_w := false
+        } else {
+            send "{s up}{w down}"
+            is_w := true
+        }
+        sleep 100
+    }
+    
+    send "{w up}{s up}"
 }
 
 always_on_top(checkbox, href) {
